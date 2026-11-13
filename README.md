@@ -1,10 +1,14 @@
 # Digitizing Italian Historical Censuses with DataLab
 
-As part of GENPOP at the University of Bologna, I worked on converting scanned Italian census tables into structured demographic data. This repository documents the page-level extraction workflow, using the 1871 census as an example.
-
-The Python workflow splits selected PDF pages, submits each page to DataLab, and converts the returned HTML table to CSV. Each row retains the original PDF filename and its page number so that extracted values can be checked against the scan. This public example adapts my original Marker workflow to DataLab’s documented Convert endpoint.
+As part of GENPOP at the University of Bologna, I worked on converting scanned Italian census tables into structured demographic data. I developed extraction strategies tailored to each census year because table layouts and page structure changed across editions. This repository illustrates one part of that work using the 1871 census.
 
 This digitization work contributed to [DemoPast](https://demopast.it/), the Italian Historical Demographic Atlas built by the GENPOP team. The atlas provides [harmonized census tables](https://demopast.it/download.html) for eleven census years from 1861 to 1971.
+
+## Adapting extraction to each census year
+
+I combined computer vision preprocessing with DataLab’s document conversion API. The layout of each edition shaped how I prepared pages, which regions I submitted for extraction, and how I interpreted the resulting tables. For example, in the 1871 work I tried full-page extraction as well as targeted crops, including page halves and lower-page regions, to isolate tables in difficult scans. The API handled document conversion, while the layout guided the choice of what to send and what to check in the returned table.
+
+The public Python example splits selected PDF pages, submits each page to DataLab, and converts the first returned HTML table to CSV. It preserves the source PDF name and page number so extracted values can be checked against the original scan. This example adapts my original Marker workflow to DataLab’s Convert endpoint and covers the full-page extraction step. The output is an intermediate table for review and harmonization.
 
 ## Run the offline example
 
