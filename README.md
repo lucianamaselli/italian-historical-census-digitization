@@ -6,7 +6,15 @@ This digitization work contributed to [DemoPast](https://demopast.it/), the Ital
 
 ## Adapting extraction to each census year
 
-I combined computer vision preprocessing with DataLab’s document conversion API. The layout of each edition shaped how I prepared pages, which regions I submitted for extraction, and how I interpreted the resulting tables. For example, in the 1871 work I tried full-page extraction as well as targeted crops, including page halves and lower-page regions, to isolate tables in difficult scans. The API handled document conversion, while the layout guided the choice of what to send and what to check in the returned table.
+We combined page preprocessing and layout-specific Python rules with Marker through the DataLab API. Marker handled OCR and table reconstruction. Our scripts determined which pages or regions to submit, how to parse the returned HTML, and how to preserve the source of each extraction.
+
+| Census | Layout or extraction problem | How we adapted the workflow |
+| --- | --- | --- |
+| 1871 | Tables could start in different parts of a page, and full-page extraction sometimes recovered only part of a table. | We tested six page variants, including the full page, page halves, and lower-page regions. The recovered script excluded candidate tables with fewer than five rows, ranked the remaining candidates by row count × column count, and recorded the source PDF, page, and selected variant. |
+| 1951 | One series stored male and female tables in separate files. Another placed both blocks side by side with marital-status columns. | For the separate files, we identified sex from the filename. For the side-by-side layout, we flattened hierarchical headers and selected the male, female, and overall totals from the relevant columns. |
+| 1961 | In one series, several consecutive pages could cover the same sex. In a second layout, some provincial scans were difficult to parse. | For the first series, we identified `Maschi` or `Femmine` from the returned HTML. For persistent failures in the second, we tried alternative HTML parsing and used local Tesseract OCR on selected scans. |
+
+The 1871 size score helped screen for partial extractions. We checked the consolidated provincial tables against the source PDFs and manually corrected discrepancies before harmonization.
 
 The public Python example splits selected PDF pages, submits each page to DataLab, and converts the first returned HTML table to CSV. It preserves the source PDF name and page number so extracted values can be checked against the original scan. This example adapts my original Marker workflow to DataLab’s Convert endpoint and covers the full-page extraction step. The output is an intermediate table for review and harmonization.
 
